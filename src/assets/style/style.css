@@ -1,0 +1,29 @@
+.button{
+    background: none;
+    border: none;
+    transition: all .2s ease-in-out
+}
+
+.button:hover{
+    transform: scale(1.23);
+}
+
+.add-button{
+    background: none;
+    border: none;
+}
+
+.add-button::after{
+    content: '';
+    display: flex;
+    border: 1px solid black;
+    width: 30%;
+    justify-content: center;
+    margin:auto;
+    transition: width .2s ease-in-out;
+
+}
+
+.add-button:hover::after{
+    width: 100%;
+}
