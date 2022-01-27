@@ -1,53 +1,56 @@
 <template>
   <div class="container">
+    <img class="mx-auto mb-6" src="../assets/img/AxaTr.jpg" alt="AXA" />
     <h3>AXA Türkiye Internship Project</h3>
     <hr />
     <div class="my-2">
       <!-- <input type="text" placeholder="What will you buy?" @keydown.enter="onSave" /> -->
-    
-   <button class="add-button" @click="$refs.modalName.openModal()">Add Products</button>
-      <modal ref="modalName">
-      <template v-slot:header>
-        <h1>Add product</h1>
-      </template>
 
-      <template v-slot:body>
-        <div class="mb-2">
-          <label for= "name">Name:</label>
-          <input id ="name" class="border-2 border-black rounded" type="text">
-        </div>
+      <button class="add-button" @click="$refs.ModalName.openModal()">
+        Add Products
+      </button>
+      <modal ref="ModalName">
+        <template v-slot:header>
+          <h1>Add product</h1>
+        </template>
 
-        <div class="mb-2">
-          <label for ="stock">Stock:</label>
-          <input id = "stock" class="border-2 border-black rounded" type="number" min="1">
-        </div>
+        <template v-slot:body>
+          <div class="group">
+            <input v-model="model.name" type="text" required />
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Name</label>
+          </div>
+          <div class="group">
+            <input v-model="model.stock" type="number" min="1" required />
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Stock</label>
+          </div>
+          <div class="group">
+            <input v-model="model.price" type="number" min="1" required />
+            <span class="highlight"></span>
+            <span class="bar"></span>
+            <label>Price</label>
+          </div>
+          <div class="group catagory">
+            <label for="products"></label>
+            <select v-model="model.categoryId" name="products" id="products">
+              <option value="1">Pencil</option>
+              <option value="2">Book</option>
+            </select>
+          </div>
+        </template>
 
-        <div class="mb-2">
-          <label for="price">Price:</label>
-          <input id = "price" class="border-2 border-black rounded" type="number" min="1">
-        </div>
-
-        <div class="mb-2">
-          <label for="products">Catagory:</label>
-          <select class="border-2 border-black rounded" name="products" id="products">
-            <option value="volvo">Pencil</option>
-            <option value="saab">Book</option>
-          </select>
-        </div>
-        
-        
-        
-
-        
-      </template>
-
-      <template v-slot:footer>
-        <div class="d-flex align-items-center justify-content-between">
-          <button type="button" class="btn1 btn-outline-warning" @click="$refs.modalName.closeModal()">Cancel</button>
-          <button type="button" class="btn btn--primary" @click="$refs.modalName.closeModal()">Save</button>
-        </div>
-      </template>
-    </modal>
+        <template v-slot:footer>
+          <div class="d-flex align-items-center justify-content-between">
+            <button class="btn1" @click="$refs.ModalName.closeModal()">
+              Cancel
+            </button>
+            <button class="btn btn--primary" @click="onSave">Save</button>
+          </div>
+        </template>
+      </modal>
     </div>
     <!-- <ul v-if="products.length > 0">
       <li v-for="product in products" :key="product.Id" class="d-flex justify-content-between align-items-center">      
@@ -56,71 +59,76 @@
     <div v-else class="bg-blue text-white">
       No Items
     </div> -->
-    <div class="my-4 relative flex items-center"><span class="absolute right-8 text-xs">{{ itemCount }} Items Exist</span></div>
+    <div class="my-4 relative flex items-center">
+      <span class="absolute right-8 text-xs">{{ itemCount }} Items Exist</span>
+    </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import Modal from "./Modal.vue"
+import Modal from "./Modal.vue";
 export default {
   components: {
-    Modal
+    Modal,
+  },
+  props: {
+    item: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
-      products: []
+      model: {
+        categoryId:"1", // Default olarak gelir. Çünkü model.
+        isDeleted:false
+      },
+      products: [],
     };
   },
   mounted() {
-    axios.get("https://localhost:44375/api/products").then(items_response => {
+    axios.get("https://localhost:44375/api/products").then((items_response) => {
       console.log("items_response :>> ", items_response);
       this.products = items_response.data || [];
       console.log("this.itemsList :>> ", this.products);
     });
   },
   methods: {
-    onSave(e) {
-      const saveObject = {
-        Name: e.target.value,
-        Stock : e.target.value,
-        price : e.target.value,
-        CategoryId : e.target.value
-      };
-      axios.post("https://localhost:44375/api/products", saveObject).then(save_response => {
-        console.log("Save ",save_response);
-        this.$emit("init")
-        e.target.value = "";
-        e.target.focus();
-      }).catch(err => {
-          console.log(err);
-      });
+   async onSave() {
+     this.model.categoryId=parseInt(this.model.categoryId)
+      console.log(this.model);
+     let result = await axios
+        .post("https://localhost:44375/api/products", this.model)
+        console.log(result)
     },
     onDelete(product) {
-      axios.delete(`https://localhost:44375/api/products/${product.Id}`).then(delete_response => {
-        console.log(delete_response);
-        this.products = this.products.filter(i => i.Id !== product.Id);
-      });
-    }
+      axios
+        .delete(`https://localhost:44375/api/products/${product.Id}`)
+        .then((delete_response) => {
+          console.log(delete_response);
+          this.products = this.products.filter((i) => i.Id !== product.Id);
+        });
+    },
   },
   computed: {
     itemCount() {
       return this.products.length || 0;
-    }
-  }
+    },
+  },
 };
 </script>
-<style>
-.btn {
-  padding: 8px 16px;
-  border-radius: 5px;
-    background-color: green;
-    color: #fff;
-}
-.btn1{
+<style scoped>
+.btn1 {
   padding: 8px 16px;
   border-radius: 5px;
   background-color: red;
+  color: #fff;
+}
+.btn {
+  padding: 8px 16px;
+  border-radius: 5px;
+  background-color: green;
   color: #fff;
 }
 .overflow-hidden {
@@ -153,5 +161,137 @@ h4,
 h5,
 h6 {
   margin: 0;
+}
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+}
+.group {
+  position: relative;
+  margin-bottom: 45px;
+}
+input {
+  font-size: 18px;
+  padding: 10px 10px 10px 5px;
+  display: block;
+  width: 300px;
+  border: none;
+  border-bottom: 1px solid #757575;
+}
+input:focus {
+  outline: none;
+}
+
+/* LABEL ======================================= */
+label {
+  color: #999;
+  font-size: 18px;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 5px;
+  top: 10px;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+
+/* active state */
+input:focus ~ label,
+input:valid ~ label {
+  top: -10px;
+  font-size: 14px;
+  color: #5264ae;
+}
+
+/* BOTTOM BARS ================================= */
+.bar {
+  position: relative;
+  display: block;
+  width: 300px;
+}
+.bar:before,
+.bar:after {
+  content: "";
+  height: 2px;
+  width: 0;
+  bottom: 1px;
+  position: absolute;
+  background: #5264ae;
+  transition: 0.2s ease all;
+  -moz-transition: 0.2s ease all;
+  -webkit-transition: 0.2s ease all;
+}
+.bar:before {
+  left: 50%;
+}
+.bar:after {
+  right: 50%;
+}
+
+/* active state */
+input:focus ~ .bar:before,
+input:focus ~ .bar:after {
+  width: 50%;
+}
+
+/* HIGHLIGHTER ================================== */
+.highlight {
+  position: absolute;
+  height: 60%;
+  width: 100px;
+  top: 25%;
+  left: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* active state */
+input:focus ~ .highlight {
+  -webkit-animation: inputHighlighter 0.3s ease;
+  -moz-animation: inputHighlighter 0.3s ease;
+  animation: inputHighlighter 0.3s ease;
+}
+
+/* ANIMATIONS ================ */
+@-webkit-keyframes inputHighlighter {
+  from {
+    background: #5264ae;
+  }
+  to {
+    width: 0;
+    background: transparent;
+  }
+}
+@-moz-keyframes inputHighlighter {
+  from {
+    background: #5264ae;
+  }
+  to {
+    width: 0;
+    background: transparent;
+  }
+}
+@keyframes inputHighlighter {
+  from {
+    background: #5264ae;
+  }
+  to {
+    width: 0;
+    background: transparent;
+  }
+}
+#products {
+  width: 320px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid;
+}
+#products option {
+  font-size: 16px;
+}
+.catagory {
+  display: flex;
+  justify-content: left;
 }
 </style>

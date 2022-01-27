@@ -31,6 +31,12 @@
 <script>
 export default {
   name: "Modal",
+  props:{
+    model:{
+      type:Object,
+      default:() => {}
+    }
+  },
   data() {
     return {
       show: false
@@ -50,6 +56,12 @@ export default {
 </script>
 
 <style>
+.modal{
+    justify-content: center;
+    position : fixed;
+    left: 50%;
+    top:45%;
+}
 .modal__backdrop{
   position: fixed;
     top: 0;
@@ -59,9 +71,8 @@ export default {
     background-color: rgba(0, 0, 0, 0.3);
     z-index: 1;
 }
-
 .modal__dialog{
-    position: absolute;
+     position: absolute;
     width: 600px;
     background-color: #ffffff;
     border-radius: 5px;
@@ -70,41 +81,30 @@ export default {
     flex-direction: column;
     z-index: 2;
 }
-
 .modal__close{
-  width: 20px;
-  height: 20px;
-  transition: transform .2s ease-in-out;
+   width: 30px;
+    height: 30px;
 }
-
-.modal__close:hover{
-  transform: scale(1.1);
-}
-
 .modal__header{
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 20px 20px 10px;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px 20px 10px;
 }
-
 .modal__body {
-  padding: 10px 20px 10px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.modal__footer {
-  padding: 10px 20px 20px;
-}
-
-.fade-enter-active,
+    padding: 10px 20px 10px;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .modal__footer {
+    padding: 10px 20px 20px;
+  }
+  .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s;
 }
-
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
