@@ -1,39 +1,40 @@
 <template>
-<!-- <img alt="Vue logo" src="./assets/img/logo.png"> -->
-<img src="./assets/img/AxaTr.jpg" alt="AXA">
-  <PostProduct @init="init" />
+  <!-- <img alt="Vue logo" src="./assets/img/logo.png"> -->
+  <PostProduct :products="products" @result="append" />
   <Products :products="products" />
-  
-  
 </template>
 
 <script>
-import Products from "./components/Products.vue"
-import PostProduct from "./components/PostProduct.vue"
-import axios from "axios"
-import "./assets/style/style.css"
+import Products from "./components/Products.vue";
+import PostProduct from "./components/PostProduct.vue";
+import axios from "axios";
+import "./assets/style/style.css";
 export default {
-  name: 'App',
+  name: "App",
   components: {
     Products,
-    PostProduct
+    PostProduct,
   },
-  data: function(){
-    return{
-      products: []
-    }
+  data: function () {
+    return {
+      products: [],
+    };
   },
-   created: function () {
-    this.init()
+  created: function () {
+    this.init();
   },
-   methods: {
-    init(){
-    axios.get("https://localhost:44375/api/products").then((res) => {
-      this.products = res.data;
-      console.log(this.products[0])
-    });}
-  }
-}
+  methods: {
+    init() {
+      axios.get("https://localhost:44375/api/products").then((res) => {
+        this.products = res.data;
+        console.log(this.products[0]);
+      });
+    },
+    append(val){
+      this.products.push(val)
+    },
+  },
+};
 </script>
 
 <style>
