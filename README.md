@@ -1,7 +1,5 @@
 # vue-app
 
-This repository contains vue.js part of the my Internship project. It helps us using CRUD operations for client part.
-
 ## Project setup
 ```
 npm install

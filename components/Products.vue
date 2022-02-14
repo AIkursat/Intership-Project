@@ -27,7 +27,7 @@
               </button>
             </td>
             <td>
-              <button class="button"  @click="removeItem(product.Id, index)" > 
+              <button class="button" @click="removeItem(product.Id, index)" > 
                 <img src="../assets/img/trash.svg" alt="Delete Button" />
               </button>
             </td>
@@ -42,7 +42,7 @@
               <template v-slot:footer>
                 <div class="d-flex align-items-center justify-content-between">
                   <button class="btn btn--secondary" @click="$refs.confirm.closeModal()">Cancel</button>
-                  <button class="btn btn--primary"  @click="removeItem(productId, index)">Delete</button>
+                  <button class="btn btn--primary"  @click="removeItem(product.Id, index)">Delete</button>
                 </div>
               </template>
             </modal> -->
@@ -98,6 +98,7 @@
         </modal>
       </div>
     </div>
+     <p>{{uyari}}</p>
   </div>
 </template>
 
@@ -117,6 +118,7 @@ export default {
   data() {
     return {
       model: {},
+      uyari: ""
     };
   },
   methods: {
@@ -149,7 +151,7 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
-
+        this.uyari = `${productId} no'lu item silindi`
       let removeItems = this.products;
       removeItems.splice(index, 1);
       }
