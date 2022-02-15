@@ -15,26 +15,26 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(product,index) in products" :key="index">
+          <tr v-for="(product, index) in products" :key="index">
             <th scope="row">{{ product.Id }}</th>
             <td>{{ product.Name }}</td>
             <td>{{ product.Stock }}</td>
             <td>{{ product.Price }}</td>
-            <td>{{ product.CategoryId }}</td>
+            <td>{{ getCategoriesName(product.CategoryId) }}</td>
             <td>
               <button class="button" @click="Edit(product)">
                 <img src="../assets/img/pencil-square.svg" alt="Edit Button" />
               </button>
             </td>
             <td>
-              <button class="button" @click="removeItem(product.Id, index)" > 
+              <button class="button" @click="askForRemove(product.Id, index)">
                 <img src="../assets/img/trash.svg" alt="Delete Button" />
               </button>
             </td>
           </tr>
         </tbody>
       </table>
-                <!-- <modal ref="confirm">
+      <!-- <modal ref="confirm">
               <template v-slot:body>
                 <p>Are you sure?</p>
               </template>
@@ -47,7 +47,6 @@
               </template>
             </modal> -->
       <div class="my-2">
-
         <modal ref="EditModal">
           <template v-slot:header>
             <h1>Update product</h1>
@@ -98,7 +97,7 @@
         </modal>
       </div>
     </div>
-     <p>{{uyari}}</p>
+    <!-- <p>{{ uyari }}</p> -->
   </div>
 </template>
 
@@ -118,43 +117,79 @@ export default {
   data() {
     return {
       model: {},
-      uyari: ""
+      // uyari: "",
+      categories:[]
     };
   },
+  created(){
+    this.getCategories();
+  },
   methods: {
+    getCategoriesName(id){
+     var res =  this.categories.filter(categorie => categorie.Id == id)
+     return res[0].Name;
+    },
+    getCategories(){
+      axios.get(`https://localhost:44375/api/categories`).then((r)=>{
+        console.log(r.data)
+        this.categories = r.data;
+      })
+    },
     async Edit(item) {
       Object.assign(this.model, item);
       console.log(this.model);
       this.$refs.EditModal.openModal();
     },
-    async onSave(){ // For editing.
-       console.log(this.model)
-       let data = {
-         id: this.model.Id,
-         name: this.model.Name,
-         stock: this.model.Stock,
-         price: this.model.Price,
-         categoryId: this.model.CategoryId,
-       }
-       console.log(data)
-        await axios.put(`https://localhost:44375/api/products`, this.model)
-        .then(response => {
-        console.log(response)
+
+    async onSave() {
+      // For editing.
+      console.log(this.model);
+      let data = {
+        id: this.model.Id,
+        name: this.model.Name,
+        stock: this.model.Stock,
+        price: this.model.Price,
+        categoryId: this.model.CategoryId,
+      };
+      console.log(data);
+      await axios
+        .put(`https://localhost:44375/api/products`, this.model)
+        .then((response) => {
+          this.$emit('editedProduct');
+           this.$refs.EditModal.closeModal()
+          console.log(response);
+        });
+    },
+    askForRemove(productId, index) {
+      this.$swal
+        .fire({
+          title:
+            productId +
+            " id numaralı kaydı sİlmek istediğinizden emin misiniz ?",
+          showCancelButton: true,
+
+          confirmButtonText: "Sil",
+          cancelButtonText: "İptal",
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            this.removeItem(productId, index);
+          }
         });
     },
     async removeItem(productId, index) {
-      console.log(productId + "1")
-      if(confirm("Are you sure?")){
-        console.log(productId)
       await axios
         .delete(`https://localhost:44375/api/products/${productId}`)
+        .then(() => {
+          this.$swal.fire(`${productId} no'lu item silindi`, "", "success");
+          // this.uyari = `${productId} no'lu item silindi`;
+          let removeItems = this.products;
+          removeItems.splice(index, 1);
+        })
         .catch(function (error) {
+          this.$swal.fire('Silme işlemi başarısız.','','error')
           console.log(error);
         });
-        this.uyari = `${productId} no'lu item silindi`
-      let removeItems = this.products;
-      removeItems.splice(index, 1);
-      }
     },
   },
 };

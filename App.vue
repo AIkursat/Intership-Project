@@ -1,7 +1,7 @@
 <template>
   <!-- <img alt="Vue logo" src="./assets/img/logo.png"> -->
   <PostProduct :products="products" @result="append" />
-  <Products :products="products" />
+  <Products :products="products" @editedProduct="init" />
 </template>
 
 <script>
