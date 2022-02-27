@@ -9,6 +9,7 @@ import Products from "./components/Products.vue";
 import PostProduct from "./components/PostProduct.vue";
 import axios from "axios";
 import "./assets/style/style.css";
+
 export default {
   name: "App",
   components: {

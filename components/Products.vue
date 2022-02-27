@@ -1,8 +1,8 @@
 <template>
   <!-- Getting the My Data  -->
-  <div>
+  <div id="Products">
     <div class="container">
-      <table class="table table-striped table-hover">
+      <table class="table table-striped table-hover" id="my-table">
         <thead>
           <tr>
             <th scope="col">ID</th>
@@ -20,32 +20,20 @@
             <td>{{ product.Name }}</td>
             <td>{{ product.Stock }}</td>
             <td>{{ product.Price }}</td>
-            <td>{{ getCategoriesName(product.CategoryId) }}</td>
+            <td>{{ product.Category.Name }}</td>
             <td>
               <button class="button" @click="Edit(product)">
                 <img src="../assets/img/pencil-square.svg" alt="Edit Button" />
               </button>
             </td>
             <td>
-              <button class="button" @click="askForRemove(product.Id, index)">
+              <button class="button" @click="askForRemove(product.Id, product.Name, index)">
                 <img src="../assets/img/trash.svg" alt="Delete Button" />
               </button>
             </td>
           </tr>
         </tbody>
       </table>
-      <!-- <modal ref="confirm">
-              <template v-slot:body>
-                <p>Are you sure?</p>
-              </template>
-
-              <template v-slot:footer>
-                <div class="d-flex align-items-center justify-content-between">
-                  <button class="btn btn--secondary" @click="$refs.confirm.closeModal()">Cancel</button>
-                  <button class="btn btn--primary"  @click="removeItem(product.Id, index)">Delete</button>
-                </div>
-              </template>
-            </modal> -->
       <div class="my-2">
         <modal ref="EditModal">
           <template v-slot:header>
@@ -98,15 +86,36 @@
       </div>
     </div>
     <!-- <p>{{ uyari }}</p> -->
+     <div class="overflow-auto">
+    <!-- <b-pagination
+      v-model="currentPage"
+      :total-rows="rows"
+      :per-page="perPage"
+      aria-controls="my-table"
+    ></b-pagination>
+
+    <p class="mt-3">Current Page: {{ currentPage }}</p>
+
+    <b-table
+      id="my-table"
+      :items="items"
+      :per-page="perPage"
+      :current-page="currentPage"
+      small
+    ></b-table> -->
+  </div>
+  <pagination v-model="page" :records="products.length" :per-page="2" @paginate="Products"/>
   </div>
 </template>
 
 <script>
 import Modal from "./Modal.vue";
 import axios from "axios";
+import Pagination from 'v-pagination-3';
+
 export default {
   components: {
-    Modal,
+    Modal, Pagination
   },
   props: {
     products: {
@@ -118,13 +127,17 @@ export default {
     return {
       model: {},
       // uyari: "",
-      categories:[]
+      categories:[],
+      page: 1,
     };
   },
   created(){
-    this.getCategories();
+    //this.getCategories();
   },
   methods: {
+     Products: function() {
+    console.log("..")
+    },
     getCategoriesName(id){
      var res =  this.categories.filter(categorie => categorie.Id == id)
      return res[0].Name;
@@ -160,12 +173,13 @@ export default {
           console.log(response);
         });
     },
-    askForRemove(productId, index) {
+    askForRemove(productId, productName, index) {
       this.$swal
         .fire({
           title:
             productId +
-            " id numaralı kaydı sİlmek istediğinizden emin misiniz ?",
+            " id numaralı " + productName + " kaydı sİlmek istediğinizden emin misiniz ?",
+            
           showCancelButton: true,
 
           confirmButtonText: "Sil",
