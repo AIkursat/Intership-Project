@@ -4,11 +4,12 @@
     <h3>AXA Türkiye Internship Project</h3>
     <hr />
     <div class="my-2">
-      <!-- <input type="text" placeholder="What will you buy?" @keydown.enter="onSave" /> -->
 
-      <button class="add-button" @click="$refs.ModalName.openModal()">
+      <!-- <button class="add-button" @click="$refs.ModalName.openModal()">
         Add Products
-      </button>
+      </button> -->
+         <button class="add-button" @click="$refs.ModalName.openModal()"><img src="../assets/img/file-earmark-plus.svg" class= "add-product" alt="Adding Button">Add Product</button>
+
       <modal ref="ModalName">
         <template v-slot:header>
           <h1>Add product</h1>
@@ -60,7 +61,7 @@
       No Items
     </div> -->
     <div class="my-4 relative flex items-center">
-      <span class="absolute right-8 text-xs">{{ itemCount }} Items Exist</span>
+      <span class="absolute right-8 text-xs">{{ products.length  }} Items Exist</span>
     </div>
   </div>
 </template>
@@ -77,6 +78,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    products: {
+      type:Array,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -84,15 +89,8 @@ export default {
         categoryId:"1", // Default olarak gelir. Çünkü model.
         isDeleted:false
       },
-      products: [],
+      
     };
-  },
-  mounted() {
-    axios.get("https://localhost:44375/api/products").then((items_response) => {
-      console.log("items_response :>> ", items_response);
-      this.products = items_response.data || [];
-      console.log("this.itemsList :>> ", this.products);
-    });
   },
   methods: {
    async onSave() {
@@ -101,14 +99,10 @@ export default {
      let result = await axios
         .post("https://localhost:44375/api/products", this.model)
         console.log(result)
-    },
-    onDelete(product) {
-      axios
-        .delete(`https://localhost:44375/api/products/${product.Id}`)
-        .then((delete_response) => {
-          console.log(delete_response);
-          this.products = this.products.filter((i) => i.Id !== product.Id);
-        });
+        if(result.status==200){
+          this.$emit("result", result.data)
+          this.$refs.ModalName.closeModal()
+        }
     },
   },
   computed: {
@@ -293,5 +287,10 @@ input:focus ~ .highlight {
 .catagory {
   display: flex;
   justify-content: left;
+}
+.add-product{
+  display: inherit;
+  margin-right: 7px;
+  margin-top: -3px;
 }
 </style>
